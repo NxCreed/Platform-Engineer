@@ -9,13 +9,12 @@ spec:
     chart: redis
     repoURL: https://charts.bitnami.com/bitnami
     targetRevision: 18.x.x
-    # Πρόσθεσε αυτό το κομμάτι για να αλλάξεις το tag
     helm:
       values: |
         image:
-            registry: docker.io
-            repository: bitnami/redis
-            tag: 7.2.5-debian-12-r16
+          registry: docker.io
+          repository: bitnami/redis
+          tag: 7.2.4-debian-12-r16  # <--- Δοκίμασε το r16 ή απλά το "7.2"
   destination:
     server: https://kubernetes.default.svc
     namespace: default
