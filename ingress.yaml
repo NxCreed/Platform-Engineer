@@ -3,6 +3,7 @@ kind: Ingress
 metadata:
   name: nginx-ingress
 spec:
+  ingressClassName: traefik # <-- ΑΥΤΗ Η ΓΡΑΜΜΗ ΕΙΝΑΙ ΤΟ ΚΛΕΙΔΙ
   rules:
   - http:
       paths:
@@ -10,6 +11,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: nginx-service # Πρέπει να ταιριάζει με το όνομα του Service μας!
+            name: prox-nginx-service # Αν το Kustomize του άλλαξε όνομα σε prod-nginx-service, βάλ'το έτσι!
             port:
               number: 80
