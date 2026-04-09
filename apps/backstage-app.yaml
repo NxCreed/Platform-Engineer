@@ -10,19 +10,26 @@ spec:
     repoURL: https://backstage.github.io/charts
     targetRevision: "*"
     helm:
-      # ΠΡΟΣΘΕΣΕ ΑΥΤΟ ΤΟ FLAG ΓΙΑ ΝΑ ΑΓΝΟΗΣΕΙ ΤΟ ERROR
-      skipSchemaValidation: true 
+      skipSchemaValidation: true
       values: |
         backstage:
           image:
+            registry: ghcr.io
             repository: roadiehq/backstage-showcase
             tag: latest
-          extraEnvVars:
-            - name: GITHUB_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: backstage-secrets
-                  key: GITHUB_TOKEN
+            pullSecrets:
+              - name: ghcr-pull-secret
+
+        global:
+          imagePullSecrets:
+            - name: ghcr-pull-secret
+
+        extraEnvVars:
+          - name: GITHUB_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: backstage-secrets
+                key: GITHUB_TOKEN
   destination:
     server: https://kubernetes.default.svc
     namespace: default
