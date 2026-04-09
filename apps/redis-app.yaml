@@ -13,7 +13,7 @@ spec:
       values: |
         image:
           registry: docker.io
-          repository: library/redis
+          repository: bitnami/redis
           tag: "7.2"  # <--- Δοκίμασε το r16 ή απλά το "7.2"
   destination:
     server: https://kubernetes.default.svc
