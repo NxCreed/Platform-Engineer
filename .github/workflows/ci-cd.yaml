@@ -24,10 +24,15 @@ jobs:
           # Αν δεν έχεις kustomize στο runner, μπορούμε να το κάνουμε με sed
           sed -i "s/nginx:latest/nginx:$NEW_TAG/g" nginx.yaml
           
-      - name: Commit and Push changes
+      - name: Commit and push changes
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "actions@github.com"
           git add nginx.yaml
-          git commit -m "chore: update nginx image to ${{ github.sha }}"
-          git push
+          # Only commit if there are staged changes
+          if ! git diff --cached --exit-code; then
+            git commit -m "chore: update nginx image to 614851f67bc9e7309ecb880622e4fbfee06e032c"
+            git push
+          else
+            echo "No changes to commit"
+          fi
