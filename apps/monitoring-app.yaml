@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: monitoring
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: kube-prometheus-stack
+    repoURL: https://prometheus-community.github.io/helm-charts
+    targetRevision: 57.1.0 # Καρφώνουμε μια σταθερή έκδοση για ασφάλεια
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring # Θα το βάλουμε σε δικό του, ξεχωριστό namespace
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true # Μαγική εντολή: Αν δεν υπάρχει το namespace, φτιάξ'το!
