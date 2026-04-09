@@ -8,14 +8,16 @@ spec:
   source:
     chart: backstage
     repoURL: https://backstage.github.io/charts
-    targetRevision: "*" # Θα τραβήξει την τελευταία έκδοση που υπάρχει στο repo
+    targetRevision: 1.0.0
     helm:
-      skipSchemaValidation: true
       values: |
         backstage:
           image:
-            repository: backstageapp/backstage
+            repository: ghcr.io/NxCreed/backstage
             tag: latest
+          # ΕΔΩ ΕΙΝΑΙ Η ΠΡΟΣΘΗΚΗ:
+          imagePullSecrets:
+            - name: ghcr-login-secret
           extraEnvVars:
             - name: GITHUB_TOKEN
               valueFrom:
