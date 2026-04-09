@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: my-nginx-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/TO_USERNAME_SOU/TO_REPO_SOU.git # <-- Βάλε το repo σου!
+    targetRevision: main
+    path: . # Επειδή τα nginx.yaml / kustomization.yaml είναι στον κεντρικό φάκελο
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
