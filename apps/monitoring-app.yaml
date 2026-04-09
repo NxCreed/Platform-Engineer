@@ -9,7 +9,7 @@ spec:
     chart: kube-prometheus-stack
     repoURL: https://prometheus-community.github.io/helm-charts
     targetRevision: 57.1.0
-    helm: # <-- ΕΔΩ ΑΡΧΙΖΟΥΝ ΟΙ ΝΕΕΣ ΡΥΘΜΙΣΕΙΣ
+    helm:
       values: |
         kubeControllerManager:
           enabled: false
@@ -28,3 +28,4 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+      - ServerSideApply=true  # <--- ΠΡΟΣΘΕΣΕ ΑΥΤΟ
