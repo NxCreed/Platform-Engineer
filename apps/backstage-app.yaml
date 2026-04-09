@@ -8,7 +8,7 @@ spec:
   source:
     chart: backstage
     repoURL: https://backstage.github.io/charts
-    targetRevision: 0.3.0 # Χρησιμοποιούμε μια σταθερή έκδοση
+    targetRevision: 1.0.0 # Χρησιμοποιούμε μια σταθερή έκδοση
     helm:
       values: |
         backstage:
