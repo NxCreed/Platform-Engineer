@@ -11,6 +11,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: prox-nginx-service # Αν το Kustomize του άλλαξε όνομα σε prod-nginx-service, βάλ'το έτσι!
+            name: nginx-service # Αν το Kustomize του άλλαξε όνομα σε prod-nginx-service, βάλ'το έτσι!
             port:
               number: 80
