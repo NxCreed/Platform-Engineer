@@ -1,0 +1,33 @@
+name: CI-CD Pipeline
+
+on:
+  push:
+    branches: [ main ] # Τρέχει όταν κάνεις push στην main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Εδώ κανονικά θα κάναμε Docker Build & Push. 
+      # Για το lab μας, θα κάνουμε μόνο το κομμάτι του "Update Manifest".
+      
+      - name: Update Kustomize image tag
+        run: |
+          # Φαντάσου ότι το νέο image tag είναι το ID του commit
+          NEW_TAG=${{ github.sha }}
+          cd . # Πάμε στον φάκελο που είναι το kustomization.yaml
+          
+          # Χρησιμοποιούμε το kustomize για να αλλάξουμε το image
+          # Αν δεν έχεις kustomize στο runner, μπορούμε να το κάνουμε με sed
+          sed -i "s/nginx:latest/nginx:$NEW_TAG/g" nginx.yaml
+          
+      - name: Commit and Push changes
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+          git add nginx.yaml
+          git commit -m "chore: update nginx image to ${{ github.sha }}"
+          git push
