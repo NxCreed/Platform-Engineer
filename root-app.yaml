@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: platform-root-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/NxCreed/Platform-Engineer.git # <-- Το repo σου!
+    targetRevision: main
+    path: apps # <-- ΠΡΟΣΟΧΗ: Κοιτάει μόνο τον φάκελο apps/
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd # Οι child εφαρμογές πρέπει να μπαίνουν στο argocd namespace
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
