@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: backstage
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: backstage
+    repoURL: https://backstage.github.io/charts
+    targetRevision: 0.3.0 # Χρησιμοποιούμε μια σταθερή έκδοση
+    helm:
+      values: |
+        backstage:
+          image:
+            repository: backstageapp/backstage
+            tag: latest
+          extraEnvVars:
+            - name: GITHUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: backstage-secrets # Το όνομα που δώσαμε στο Sealed Secret (αφού ξεκλειδωθεί)
+                  key: GITHUB_TOKEN
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

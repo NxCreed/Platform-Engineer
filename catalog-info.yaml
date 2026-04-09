@@ -1,0 +1,14 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: prod-nginx-service
+  description: "The main Nginx entry point for our platform"
+  annotations:
+    # Εδώ "κολλάμε" το ArgoCD plugin
+    argocd/app-name: 'my-nginx-app' 
+    # Εδώ "κολλάμε" το GitHub plugin
+    github.com/project-slug: 'ΤΟ_USERNAME_SOU/TO_REPO_SOU'
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
