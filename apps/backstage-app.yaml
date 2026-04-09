@@ -8,9 +8,9 @@ spec:
   source:
     chart: backstage
     repoURL: https://backstage.github.io/charts
-    targetRevision: 1.0.0
+    targetRevision: 0.3.0
     helm:
-      # Εδώ προσθέτουμε το flag απευθείας στον Helm client
+      # ΠΡΟΣΘΕΣΕ ΑΥΤΟ ΤΟ FLAG ΓΙΑ ΝΑ ΑΓΝΟΗΣΕΙ ΤΟ ERROR
       skipSchemaValidation: true 
       values: |
         backstage:
@@ -30,6 +30,3 @@ spec:
     automated:
       prune: true
       selfHeal: true
-    syncOptions:
-      - Validate=false
-      - CreateNamespace=true
