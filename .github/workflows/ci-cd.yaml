@@ -30,7 +30,7 @@ jobs:
         run: |
           # Εδώ χρησιμοποιούμε το 'sed' για να αλλάξουμε το image tag στο deployment αρχείο σου
           # Αντικατάστησε το 'nginx-deployment.yaml' με το δικό σου αρχείο
-          sed -i "s|image: .*|image: ${{ secrets.DOCKERHUB_USERNAME }}/my-nginx-app:latest|g" k8s/nginx-deployment.yaml
+          sed -i "s|image: .*|image: ${{ secrets.DOCKERHUB_USERNAME }}/my-nginx-app:latest|g" nginx.yaml
           
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
