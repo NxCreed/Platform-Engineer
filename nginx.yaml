@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: nxcreed/my-nginx-app:896d018d877ea9934db1117e72208ec7a3587c67
+        image: nxcreed/my-nginx-app:d2d665eb2925292c03eb70a47e2a223447bdf573
         ports:
         - containerPort: 80
         resources:
