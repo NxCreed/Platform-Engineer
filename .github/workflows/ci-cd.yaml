@@ -38,9 +38,8 @@ jobs:
       # 3. Kube-linter: Έλεγχος βέλτιστων πρακτικών Kubernetes
       - name: Kube-linter Scan
         uses: stackrox/kube-linter-action@v1
-        with:
-          directory: .
-          output_format: sarif
+        run: |
+          docker run --rm -v "${{ github.workspace }}:/dir" stackrox/kube-linter lint /dir --format sarif > kube-linter.sarif
         continue-on-error: true
 
       # 4. Upload αποτελεσμάτων στο Security Tab
@@ -62,8 +61,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
-          sarif_file: kube-linter.sarif
-          category: kube-linter
+          sarif_file: .
 
   # STAGE 2: Build και Image Scanning
   build-and-deploy:
