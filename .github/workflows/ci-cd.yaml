@@ -1,4 +1,4 @@
-name: DevSecOps Master Pipeline
+name: DevSecOps Comprehensive Pipeline
 
 on:
   push:
@@ -7,8 +7,8 @@ on:
     branches: [ "main" ]
 
 jobs:
-  static-security:
-    name: Static Security Scan
+  security-scan:
+    name: Security & IaC Scanning
     runs-on: ubuntu-latest
     permissions:
       security-events: write
@@ -17,39 +17,43 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 1. Semgrep: Έλεγχος κώδικα
+      # 1. Semgrep: Σαρώνει όλο το repo για ευπάθειες κώδικα
       - name: Semgrep SAST
         run: |
           docker run --rm -v "${{ github.workspace }}:/src" returntocorp/semgrep \
           semgrep scan --config auto --sarif --output semgrep.sarif
         continue-on-error: true
 
-      # 2. Checkov: Έλεγχος Kubernetes YAML
+      # 2. Checkov: Σαρώνει όλα τα YAML αρχεία σε όλους τους φακέλους
       - name: Checkov IaC Scan
         uses: bridgecrewio/checkov-action@master
         with:
-          directory: .
+          directory: . # Η τελεία σημαίνει "ξεκίνα από την ρίζα και ψάξε παντού"
           framework: kubernetes
           output_format: sarif
           output_file_path: checkov.sarif
           soft_fail: true
 
-      # 3. Kube-linter: Έλεγχος K8s Best Practices (Διορθωμένο step)
-      - name: Kube-linter Scan
-        run: |
-          docker run --rm -v "${{ github.workspace }}:/dir" stackrox/kube-linter lint /dir --format sarif > kube-linter.sarif
+      # 3. Trivy: Σαρώνει το Filesystem για Misconfigurations (YAML/Dockerfile)
+      - name: Trivy Config Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'config'
+          directory: '.' # Σαρώνει όλο το repo αναδρομικά
+          format: 'sarif'
+          output: 'trivy-config.sarif'
         continue-on-error: true
 
-      # 4. Upload ΟΛΩΝ των αποτελεσμάτων στο Security Tab
+      # 4. Ανέβασμα όλων των αποτελεσμάτων στο Security Tab
       - name: Upload Security Results
         uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
-          sarif_file: . # Θα βρει αυτόματα τα semgrep.sarif, checkov.sarif και kube-linter.sarif
+          sarif_file: . # Μαζεύει όλα τα .sarif αρχεία αυτόματα
 
   build-and-deploy:
-    name: Build, Scan and Push
-    needs: static-security
+    name: Build & Image Security
+    needs: security-scan
     runs-on: ubuntu-latest
     permissions:
       security-events: write
@@ -58,25 +62,27 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Build το image
       - name: Build Docker Image
         run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/my-nginx-app:${{ github.sha }} .
 
-      # Trivy: Έλεγχος Image
+      # 5. Trivy: Σαρώνει το Image για CVEs (Ευπάθειες σε πακέτα)
       - name: Trivy Image Scan
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: '${{ secrets.DOCKERHUB_USERNAME }}/my-nginx-app:${{ github.sha }}'
           format: 'sarif'
-          output: 'trivy.sarif'
+          output: 'trivy-image.sarif'
           severity: 'CRITICAL,HIGH'
 
-      - name: Upload Trivy Results
+      - name: Upload Trivy Image Results
         uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
-          sarif_file: trivy.sarif
+          sarif_file: trivy-image.sarif
           category: trivy-image
 
+      # Login & Push
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -86,12 +92,12 @@ jobs:
       - name: Push Image
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/my-nginx-app:${{ github.sha }}
 
-      # GitOps: Update nginx.yaml
+      # GitOps Update (για το ArgoCD)
       - name: Update Kubernetes Manifest
         run: |
           sed -i "s|image: nxcreed/my-nginx-app:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/my-nginx-app:${{ github.sha }}|g" nginx.yaml
           
-      - name: Commit and Push to Git
+      - name: Commit and Push
         run: |
           git config --global user.email "devsecops-bot@example.com"
           git config --global user.name "DevSecOps Bot"
