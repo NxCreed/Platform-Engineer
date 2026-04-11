@@ -1,11 +1,13 @@
-name: DevSecOps Full Pipeline
+name: DevSecOps Master Pipeline
 
 on:
   push:
     branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
-  # STAGE 1: Στατικοί έλεγχοι (Κώδικας & YAML)
+  # STAGE 1: Στατική Ανάλυση (Κώδικας, IaC, Kubernetes)
   static-security:
     name: Static Security Scan
     runs-on: ubuntu-latest
@@ -16,12 +18,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # 1. Semgrep: Έλεγχος πηγαίου κώδικα
       - name: Semgrep SAST
         run: |
           docker run --rm -v "${{ github.workspace }}:/src" returntocorp/semgrep \
           semgrep scan --config auto --sarif --output semgrep.sarif
         continue-on-error: true
 
+      # 2. Checkov: Έλεγχος ασφαλείας στα Kubernetes YAML
       - name: Checkov IaC Scan
         uses: bridgecrewio/checkov-action@master
         with:
@@ -31,7 +35,16 @@ jobs:
           output_file_path: checkov.sarif
           soft_fail: true
 
-      - name: Upload Static Results to Security Tab
+      # 3. Kube-linter: Έλεγχος βέλτιστων πρακτικών Kubernetes
+      - name: Kube-linter Scan
+        uses: stackrox/kube-linter-action@v1
+        with:
+          directory: .
+          output_format: sarif
+        continue-on-error: true
+
+      # 4. Upload αποτελεσμάτων στο Security Tab
+      - name: Upload Semgrep Results
         uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
@@ -45,24 +58,37 @@ jobs:
           sarif_file: checkov.sarif
           category: checkov
 
+      - name: Upload Kube-linter Results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: kube-linter.sarif
+          category: kube-linter
+
   # STAGE 2: Build και Image Scanning
-  build-and-scan:
-    name: Build and Image Scan
+  build-and-deploy:
+    name: Build, Scan and Push
     needs: static-security
     runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # 1. Build το Image τοπικά για σκανάρισμα
       - name: Build Docker Image
-        run: docker build -t my-app:${{ github.sha }} .
+        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/my-nginx-app:${{ github.sha }} .
 
+      # 2. Trivy: Έλεγχος του Image για CVEs (Ευπάθειες)
       - name: Trivy Image Scan
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'my-app:${{ github.sha }}'
+          image-ref: '${{ secrets.DOCKERHUB_USERNAME }}/my-nginx-app:${{ github.sha }}'
           format: 'sarif'
           output: 'trivy.sarif'
+          severity: 'CRITICAL,HIGH'
 
       - name: Upload Trivy Results
         uses: github/codeql-action/upload-sarif@v3
@@ -71,45 +97,25 @@ jobs:
           sarif_file: trivy.sarif
           category: trivy-image
 
-  # STAGE 3: Δυναμικός έλεγχος (DAST)
-  dast-scan:
-    name: DAST Scan (OWASP ZAP)
-    needs: build-and-scan
-    runs-on: ubuntu-latest
-    permissions:
-      issues: write
-      security-events: write
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      # 3. Push στο Docker Hub (Μόνο αν το Trivy δεν βρήκε Critical/High αν θες να το κόψεις)
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Start App Container
+      - name: Push Image
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/my-nginx-app:${{ github.sha }}
+
+      # 4. GitOps: Ενημέρωση του YAML για το ArgoCD
+      - name: Update Kubernetes Manifest
         run: |
-          docker build -t test-app .
-          docker run -d -p 8080:80 --name webapp test-app
-          sleep 10 # Δίνουμε χρόνο στο Nginx να ξεκινήσει
-
-      - name: ZAP Baseline Scan
-        uses: zaproxy/action-baseline@v0.12.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          target: 'http://localhost:8080'
-          # Παράγουμε HTML report και SARIF για το Security Tab
-          cmd_options: '-a -r report.html -S' 
-
-      - name: Upload ZAP HTML Report
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: zap-report
-          path: report.html
-
-      - name: Upload ZAP SARIF to Security Tab
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: 'zap_out.sarif'
-          category: owasp-zap
-
-      - name: Stop App
-        run: docker stop webapp
+          sed -i "s|image: nxcreed/my-nginx-app:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/my-nginx-app:${{ github.sha }}|g" nginx.yaml
+          
+      - name: Commit and Push to Git
+        run: |
+          git config --global user.email "devsecops-bot@example.com"
+          git config --global user.name "DevSecOps Bot"
+          git add nginx.yaml
+          git commit -m "chore: update image to ${{ github.sha }} [skip ci]"
+          git push
