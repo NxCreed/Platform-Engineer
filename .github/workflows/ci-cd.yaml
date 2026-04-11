@@ -1,65 +1,88 @@
-name: Secure CI/CD Pipeline
+name: DevSecOps CI/CD Pipeline
 
 on:
   push:
     branches: [ "main" ]
 
 jobs:
-  build-and-deploy:
+  security-scan:
+    name: Security Analysis
     runs-on: ubuntu-latest
-    permissions:
-      contents: write # Απαραίτητο για να κάνει το commit στο τέλος
-    
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Απαραίτητο για το Gitleaks
+
+      # 1. Έλεγχος για Secrets (Gitleaks)
+      - name: Gitleaks Scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # 2. Στατική Ανάλυση Κώδικα (Semgrep)
+      - name: Semgrep SAST
+        run: |
+          docker run --rm -v "${{ github.workspace }}:/src" returntocorp/semgrep semgrep scan --config auto
+
+      # 3. Έλεγχος Infrastructure as Code (Checkov)
+      # Θα ελέγξει τα nginx.yaml, argocd-ingress.yaml κλπ που ανέβασες
+      - name: Checkov IaC Scan
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: .
+          framework: kubernetes
+          soft_fail: true # Μην κόψεις το build ακόμα, απλά δείξε τα λάθη
+
+  build-and-push:
+    name: Build & Push Image
+    needs: security-scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Login to Docker Hub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # 1. BUILD ΤΟ IMAGE ΤΟΠΙΚΑ (Χωρίς push ακόμα)
-      - name: Build Docker Image Locally
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          load: true # Το φορτώνει τοπικά στον runner για να το σκανάρει
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/my-nginx-app:test
+      # 4. Build και Scan του Image με Trivy πριν το Push
+      - name: Build Docker Image
+        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/my-nginx-app:${{ github.sha }} .
 
-      # 2. SECURITY SCAN (Trivy)
-      # Αν βρει "HIGH" ή "CRITICAL" vulnerabilities, το workflow θα αποτύχει εδώ!
-      - name: Run Trivy Vulnerability Scanner
+      - name: Trivy Vulnerability Scan
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: '${{ secrets.DOCKERHUB_USERNAME }}/my-nginx-app:test'
+          image-ref: '${{ secrets.DOCKERHUB_USERNAME }}/my-nginx-app:${{ github.sha }}'
           format: 'table'
-          exit-code: '1' # Αν βρει κενά, σταματάει το pipeline (error)
+          exit-code: '1' # Κόψε το build αν βρεις σοβαρά κενά (High/Critical)
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
 
-      # 3. PUSH ΤΟ IMAGE (Μόνο αν το scan πέρασε)
-      - name: Push Docker Image to Docker Hub
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/my-nginx-app:latest
+      - name: Push Image
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/my-nginx-app:${{ github.sha }}
 
-      # 4. UPDATE K8S MANIFEST (Μόνο αν όλα είναι οκ)
-      - name: Update Kubernetes Manifest
+  update-manifest:
+    name: Update K8s Manifests
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 5. Ενημέρωση του Image Tag στο nginx.yaml (GitOps flow)
+      # Το ArgoCD θα δει την αλλαγή στο Git και θα κάνει deploy
+      - name: Update Image Version
         run: |
-          sed -i "s|image: .*|image: ${{ secrets.DOCKERHUB_USERNAME }}/my-nginx-app:latest|g" nginx.yaml
-          git config --global user.name "GitHub Action"
-          git config --global user.email "action@github.com"
+          sed -i "s|image: nxcreed/my-nginx-app:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/my-nginx-app:${{ github.sha }}|g" nginx.yaml
+          
+      - name: Commit and Push changes
+        run: |
+          git config --global user.email "devsecops-bot@example.com"
+          git config --global user.name "DevSecOps Bot"
           git add nginx.yaml
-          if git diff --staged --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "chore: update image to latest [skip ci]"
-            git push
-          fi
-          git commit -m "chore: security-scan passed, updating image"
+          git commit -m "Update image to version ${{ github.sha }} [skip ci]"
           git push
