@@ -17,39 +17,39 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 1. Semgrep: Σαρώνει όλο το repo για ευπάθειες κώδικα
+      # 1. Semgrep SAST
       - name: Semgrep SAST
         run: |
           docker run --rm -v "${{ github.workspace }}:/src" returntocorp/semgrep \
           semgrep scan --config auto --sarif --output semgrep.sarif
         continue-on-error: true
 
-      # 2. Checkov: Σαρώνει όλα τα YAML αρχεία σε όλους τους φακέλους
+      # 2. Checkov IaC Scan
       - name: Checkov IaC Scan
         uses: bridgecrewio/checkov-action@master
         with:
-          directory: . # Η τελεία σημαίνει "ξεκίνα από την ρίζα και ψάξε παντού"
+          directory: .
           framework: kubernetes
           output_format: sarif
           output_file_path: checkov.sarif
           soft_fail: true
 
-      # 3. Trivy: Σαρώνει το Filesystem για Misconfigurations (YAML/Dockerfile)
+      # 3. Trivy Config Scan
       - name: Trivy Config Scan
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'config'
-          directory: '.' # Σαρώνει όλο το repo αναδρομικά
+          directory: '.'
           format: 'sarif'
           output: 'trivy-config.sarif'
         continue-on-error: true
 
-      # 4. Ανέβασμα όλων των αποτελεσμάτων στο Security Tab
+      # 4. Ανέβασμα αποτελεσμάτων
       - name: Upload Security Results
         uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
-          sarif_file: . # Μαζεύει όλα τα .sarif αρχεία αυτόματα
+          sarif_file: .
 
   build-and-deploy:
     name: Build & Image Security
@@ -62,11 +62,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Build το image
+      # ΔΙΟΡΘΩΣΗ: Προσθήκη του σωστού path για το Dockerfile
       - name: Build Docker Image
-        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/my-nginx-app:${{ github.sha }} .
+        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/my-nginx-app:${{ github.sha }} ./apps/base
 
-      # 5. Trivy: Σαρώνει το Image για CVEs (Ευπάθειες σε πακέτα)
+      # 5. Trivy Image Scan
       - name: Trivy Image Scan
         uses: aquasecurity/trivy-action@master
         with:
@@ -82,21 +82,23 @@ jobs:
           sarif_file: trivy-image.sarif
           category: trivy-image
 
-      # Login & Push
+      # Login
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      # ΔΙΟΡΘΩΣΗ: Αφαίρεση του path από το push
       - name: Push Image
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/my-nginx-app:${{ github.sha }} ./apps/base
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/my-nginx-app:${{ github.sha }}
 
       # GitOps Update (για το ArgoCD)
       - name: Update Kubernetes Manifest
         run: |
           sed -i "s|image: ${{ secrets.DOCKERHUB_USERNAME }}/my-nginx-app:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/my-nginx-app:${{ github.sha }}|g" apps/base/nginx.yaml
           
+      # ΔΙΟΡΘΩΣΗ: Σωστό path στο git add
       - name: Commit and Push
         run: |
           git config --global user.email "devsecops-bot@example.com"
