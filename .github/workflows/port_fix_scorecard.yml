@@ -1,0 +1,24 @@
+name: Fix Port Scorecard
+on:
+  workflow_dispatch: # Επιτρέπει στο Port να το "χτυπήσει"
+    inputs:
+      port_payload:
+        description: 'Payload from Port'
+        required: true
+
+jobs:
+  fix-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Create README
+        run: |
+          echo "# Platform Engineer Project" > README.md
+          echo "This project is managed via Port IDP." >> README.md
+      - name: Commit and Push
+        run: |
+          git config --global user.name "Port-Bot"
+          git config --global user.email "bot@getport.io"
+          git add README.md
+          git commit -m "docs: auto-create readme from Port Action"
+          git push
