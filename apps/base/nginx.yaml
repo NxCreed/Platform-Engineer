@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      securityContext: # Προσθήκη Security Context
+        runAsNonRoot: true
+        runAsUser: 101
+      containers:
+      - name: nginx
+        image: nxcreed/my-nginx-app:896d018d877ea9934db1117e72208ec7a3587c67
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+        ports:
+        - containerPort: 80
+        livenessProbe: # Προσθήκη Health Check
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        resources:
+          requests:
+            cpu: "200m"
+            memory: "64Mi"
+          limits:
+            cpu: "400m"
+            memory: "128Mi"
