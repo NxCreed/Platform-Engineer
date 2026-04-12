@@ -90,7 +90,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Push Image
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/my-nginx-app:${{ github.sha }}
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/my-nginx-app:${{ github.sha }} ./apps/base
 
       # GitOps Update (για το ArgoCD)
       - name: Update Kubernetes Manifest
