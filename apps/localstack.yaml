@@ -12,12 +12,14 @@ spec:
     helm:
       values: |
         image:
-          # Χρησιμοποιούμε το απλό image, όχι το pro
+          # Χρησιμοποιούμε το ρητό repository και pullPolicy Always για να ξεκολλήσει
           repository: localstack/localstack
-          tag: latest
+          tag: 3.0.0
+          pullPolicy: Always
         
         extraEnvVars:
           - name: SERVICES
+            # ΜΟΝΟ δωρεάν υπηρεσίες. Αν υπάρχει RDS εδώ, θα φας πάλι Exit 55.
             value: "s3,sqs,lambda,sns,dynamodb,iam,apigateway"
           - name: ACTIVATE_PRO
             value: "0"
@@ -25,8 +27,13 @@ spec:
             value: "1"
           - name: LAMBDA_EXECUTOR
             value: "local"
+          - name: LOCALSTACK_AUTH_TOKEN
+            value: ""
         
-        # Απενεργοποιούμε το Docker mount για να μην έχουμε permissions errors
+        # Απενεργοποιούμε το persistence προσωρινά για να σβηστούν παλιά Pro configs
+        persistence:
+          enabled: false
+
         mountDind:
           enabled: false
 
@@ -35,12 +42,8 @@ spec:
             cpu: "200m"
             memory: "512Mi"
           limits:
-            cpu: "1000m"
+            cpu: "500m"
             memory: "1Gi"
-
-        persistence:
-          enabled: true
-          size: 5Gi
         
         service:
           type: ClusterIP
