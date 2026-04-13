@@ -1,31 +1,21 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: localstack-aws
-  namespace: argocd
-spec:
-  project: default
-  source:
-    chart: localstack
-    repoURL: https://localstack.github.io/helm-charts
-    targetRevision: 0.6.14
-    helm:
+helm:
       values: |
         image:
           tag: latest
         extraEnvVars:
-          - name: LOCALSTACK_AUTH_TOKEN
-            value: ls-QaCaRikI-wEWE-nETu-7818-4407TiRa7656
           - name: SERVICES
-            value: "s3,sqs,lambda,sns"
+            value: "s3,sqs,lambda,sns,dynamodb" # Αφαιρέθηκε το RDS (Pro)
           - name: DEBUG
             value: "1"
           - name: LAMBDA_EXECUTOR
-            value: "local"
-          - name: DOCKER_HOST
-            value: "unix:///var/run/docker.sock"
+            value: "local" # Τρέχει τις Lambdas μέσα στο process, χωρίς Docker socket
+          - name: LOCALSTACK_HOST
+            value: "localhost"
         
-        # Προσθήκη ορίων μνήμης και CPU
+        # Απενεργοποιούμε το mount του Docker socket για να μην πετάει το FileNotFoundError
+        mountDind:
+          enabled: false
+
         resources:
           requests:
             cpu: "200m"
@@ -34,23 +24,6 @@ spec:
             cpu: "1000m"
             memory: "2Gi"
 
-        # Δίνουμε περισσότερο χρόνο στο Probe να περιμένει το Localstack
-        livenessProbe:
-          initialDelaySeconds: 60
-        readinessProbe:
-          initialDelaySeconds: 60
-
         persistence:
           enabled: true
           size: 5Gi
-        service:
-          type: ClusterIP
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: localstack
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
