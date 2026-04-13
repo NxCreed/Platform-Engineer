@@ -20,22 +20,19 @@ spec:
                 name: localstack-secrets
                 key: auth-token
           - name: SERVICES
-            value: "s3,sqs,lambda,sns,dynamodb"
+            value: "s3,sqs,lambda,rds,sns,dynamodb"
           - name: DEBUG
             value: "1"
           - name: LAMBDA_EXECUTOR
-            value: "docker" # Το Pro προτιμάει docker executor
-          - name: DOCKER_HOST
-            value: "unix:///var/run/docker.sock"
-
-        # Ενεργοποιούμε το Docker-in-Docker για να βλέπει το socket
+            value: "local"
+        
         mountDind:
-          enabled: true
+          enabled: false
 
         resources:
           requests:
             cpu: "200m"
-            memory: "1Gi" # Αυξήθηκε γιατί το RDS + Pro είναι βαριά
+            memory: "1Gi"
           limits:
             cpu: "1000m"
             memory: "2Gi"
@@ -43,9 +40,6 @@ spec:
         persistence:
           enabled: true
           size: 5Gi
-        
-        service:
-          type: ClusterIP
   destination:
     server: https://kubernetes.default.svc
     namespace: localstack
