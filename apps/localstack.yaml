@@ -14,6 +14,8 @@ spec:
         image:
           tag: latest
         extraEnvVars:
+          - name: LOCALSTACK_AUTH_TOKEN
+            value: ls-QaCaRikI-wEWE-nETu-7818-4407TiRa7656
           - name: SERVICES
             value: "s3,sqs,lambda,sns"
           - name: DEBUG
