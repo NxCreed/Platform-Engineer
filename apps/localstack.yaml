@@ -13,36 +13,42 @@ spec:
       values: |
         image:
           tag: latest
+        
+        # Ρυθμίσεις για τη Δωρεάν Έκδοση
         extraEnvVars:
-          - name: LOCALSTACK_AUTH_TOKEN
-            valueFrom:
-              secretKeyRef:
-                name: localstack-secrets
-                key: auth-token
           - name: SERVICES
-            value: "s3,sqs,lambda,rds,sns,dynamodb"
+            # Αφαιρέθηκε το RDS (είναι Pro). Προστέθηκαν οι βασικές δωρεάν υπηρεσίες.
+            value: "s3,sqs,lambda,sns,dynamodb,iam,apigateway"
           - name: DEBUG
             value: "1"
           - name: LAMBDA_EXECUTOR
             value: "local"
         
+        # Απενεργοποίηση Docker support για να μην ψάχνει το /var/run/docker.sock
         mountDind:
           enabled: false
 
+        # Πόροι Συστήματος (Resources) - Η free έκδοση είναι πιο ελαφριά
         resources:
           requests:
             cpu: "200m"
-            memory: "1Gi"
+            memory: "512Mi"
           limits:
             cpu: "1000m"
-            memory: "2Gi"
+            memory: "1Gi"
 
+        # Persistence για να σώζονται τα δεδομένα σου
         persistence:
           enabled: true
           size: 5Gi
+        
+        service:
+          type: ClusterIP
+
   destination:
     server: https://kubernetes.default.svc
     namespace: localstack
+
   syncPolicy:
     automated:
       prune: true
