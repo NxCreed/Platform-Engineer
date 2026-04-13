@@ -26,8 +26,21 @@ spec:
             value: "s3,sqs,lambda,sns,dynamodb,ec2,iam"
           - name: DEBUG
             value: "1"
-          - name: LAMBDA_EXECUTOR
-            value: "local"
+          - name: DOCKER_HOST
+            value: unix:///var/run/docker.sock
+        
+        # ΑΥΤΟ ΕΙΝΑΙ ΤΟ ΚΛΕΙΔΙ ΓΙΑ ΤΗΝ EC2 ΣΤΑ WINDOWS
+        mountDind:
+          enabled: false # Απενεργοποιούμε το εσωτερικό Docker...
+        
+        # ...και κάνουμε mount το Docker των Windows
+        volumes:
+          - name: docker-sock
+            hostPath:
+              path: /var/run/docker.sock
+        volumeMounts:
+          - name: docker-sock
+            mountPath: /var/run/docker.sock
 
         resources:
           requests:
@@ -35,10 +48,7 @@ spec:
             memory: "1Gi"
           limits:
             cpu: "1000m"
-            memory: "2Gi"
-
-        persistence:
-          enabled: false  # Κράτα το false μέχρι να δούμε το "Green"
+            memory: "2Gi" # Το EC2 θέλει μνήμη!
 
   destination:
     server: https://kubernetes.default.svc
