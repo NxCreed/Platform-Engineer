@@ -17,7 +17,7 @@ spec:
           - name: LOCALSTACK_AUTH_TOKEN
             value: "ls-QaCaRikI-wEWE-nETu-7818-4407TiRa7656"
           - name: SERVICES
-            value: "s3,sqs,lambda,rds,sns,dynamodb"
+            value: "s3,sqs,lambda,sns,dynamodb"
           - name: DEBUG
             value: "1"
           - name: LAMBDA_EXECUTOR
