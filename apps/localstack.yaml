@@ -23,7 +23,7 @@ spec:
                 name: localstack-secrets
                 key: auth-token
           - name: SERVICES
-            value: "s3,sqs,lambda,rds,sns,dynamodb"
+            value: "s3,sqs,lambda,sns,dynamodb,ec2,iam"
           - name: DEBUG
             value: "1"
           - name: LAMBDA_EXECUTOR

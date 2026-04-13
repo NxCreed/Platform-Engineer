@@ -1,0 +1,32 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: localstack-ingress
+  namespace: localstack
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    # Αυτό χρειάζεται για να επιτρέπονται μεγάλα uploads στο S3
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+spec:
+  rules:
+  - host: localstack.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: localstack-aws # Βεβαιώσου ότι αυτό είναι το όνομα του Service σου
+            port:
+              number: 4566
+  # Για το S3 (Path-style ή Virtual-host style υποστήριξη)
+  - host: "*.localstack.local"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: localstack-aws
+            port:
+              number: 4566
