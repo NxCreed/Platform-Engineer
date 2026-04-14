@@ -15,9 +15,9 @@ spec:
         hubble:
           enabled: true
           relay:
-            enabled: true
+          enabled: true
           ui:
-            enabled: false 
+            enabled: true
 
         # Μόνο ένας operator (όχι HA)
         operator:
