@@ -16,6 +16,12 @@ spec:
           enabled: false
         
         prometheusOperator:
+          # --- ΠΡΟΣΘΗΚΗ: Απενεργοποίηση των Webhooks που κολλάνε ---
+          admissionWebhooks:
+            enabled: false
+          tls:
+            enabled: false
+          # ---------------------------------------------------------
           resources:
             limits:
               cpu: 100m
@@ -71,4 +77,4 @@ spec:
       - CreateNamespace=true
       - ServerSideApply=true
       - Replace=true
-      - SkipDryRunOnMissingResource=true # Χρήσιμο για CRD που μπορεί να μην έχουν δημιουργηθεί ακόμα
+      - SkipDryRunOnMissingResource=true
