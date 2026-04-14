@@ -18,4 +18,5 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-      - ServerSideApply=true  # ΑΥΤΟ ΘΑ ΛΥΣΕΙ ΤΟ "TOO LONG" ERROR
+      - ServerSideApply=true  # Χρησιμοποιεί το API του server αντί για το client-side annotation
+      - Replace=true          # Χρήσιμο αν το CRD έχει ήδη "βρώμικο" state
