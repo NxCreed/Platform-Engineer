@@ -16,7 +16,7 @@ spec:
           relay:
             enabled: true
           ui:
-            enabled: false 
+            enabled: true
         operator:
           replicas: 1
           resources:
