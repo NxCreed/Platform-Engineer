@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: nginx-to-redis-only
+  namespace: apps
+spec:
+  podSelector:
+    matchLabels:
+      app: nginx # Εφαρμόζεται στον Nginx
+  policyTypes:
+  - Egress
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: redis # Επιτρέπει την έξοδο ΜΟΝΟ προς Redis
+    ports:
+    - protocol: TCP
+      port: 6379
+  - to: # Απαραίτητο για να μπορεί να "βρει" το IP του Redis
+    - namespaceSelector: {}
+    ports:
+    - protocol: UDP
+      port: 53
