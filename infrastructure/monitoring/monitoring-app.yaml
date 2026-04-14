@@ -11,6 +11,40 @@ spec:
     targetRevision: 57.1.0
     helm:
       values: |
+        # Κλείνουμε βαριά και περιττά components
+        alertmanager:
+          enabled: false
+        
+        prometheusOperator:
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+            requests:
+              cpu: 50m
+              memory: 64Mi
+
+        prometheus:
+          prometheusSpec:
+            retention: 1h
+            resources:
+              limits:
+                cpu: 200m
+                memory: 512Mi
+              requests:
+                cpu: 100m
+                memory: 256Mi
+
+        grafana:
+          resources:
+            limits:
+              cpu: 200m
+              memory: 256Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+
+        # Απενεργοποίηση metrics που δεν χρειαζόμαστε στο lab
         kubeControllerManager:
           enabled: false
         kubeEtcd:
@@ -19,6 +53,13 @@ spec:
           enabled: false
         kubeProxy:
           enabled: false
+
+        nodeExporter:
+          resources:
+            limits:
+              memory: 50Mi
+            requests:
+              memory: 20Mi
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
@@ -28,6 +69,4 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-      - ServerSideApply=true #Test
-      - Replace=true
-      - Validate=false
+      - ServerSideApply=true
