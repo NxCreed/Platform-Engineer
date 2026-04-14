@@ -70,3 +70,5 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
+      - Replace=true
+      - SkipDryRunOnMissingResource=true # Χρήσιμο για CRD που μπορεί να μην έχουν δημιουργηθεί ακόμα
