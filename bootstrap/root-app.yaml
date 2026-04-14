@@ -8,7 +8,9 @@ spec:
   source:
     repoURL: https://github.com/chrisignat/Platform-Engineer.git # <-- Το repo σου!
     targetRevision: main
-    path: infrastructure # <-- ΠΡΟΣΟΧΗ: Κοιτάει μόνο τον φάκελο apps/
+    path: infrastructure # <-- ΠΡΟΣΟΧΗ: Κοιτάει μόνο τον φάκελο infra
+    directory:
+      recurse: true # Αυτό επιτρέπει στο ArgoCD να βρει όλες τις child εφαρμογές μέσα στον φάκελο infra
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd # Οι child εφαρμογές πρέπει να μπαίνουν στο argocd namespace
