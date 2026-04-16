@@ -74,8 +74,51 @@ This repository is a professional **Internal Developer Platform (IDP)** demonstr
 127.0.0.1 localstack.local
 ```
 
-🛠️ Troubleshooting🐙 ArgoCD Sync IssuesIf the ArgoCD sync hangs or gets stuck, run the following command to restart the repo server:Bashkubectl rollout restart deployment argocd-repo-server -n argocd
-☁️ LocalStack SetupUsing LocalStack requires a personal account. You must create a Kubernetes secret containing your personal authentication token:Bashkubectl create secret generic localstack-secrets -n localstack --from-literal=auth-token='YOUR-TOKEN'
-📊 Prometheus Permission DeniedIn the event of a "Permission Denied" error in Prometheus (Monitoring stack), follow these steps to clean up the environment:Bashkubectl delete application monitoring -n argocd
+## 🛠️ Troubleshooting
+
+### 🐙 ArgoCD Sync Issues
+If the ArgoCD sync hangs or gets stuck, run the following command to restart the repo server:
+
+```bash
+kubectl rollout restart deployment argocd-repo-server -n argocd
+```
+
+### ☁️ LocalStack Setup
+Using LocalStack requires a personal account. You must create a Kubernetes secret containing your personal authentication token:
+
+```bash
+kubectl create secret generic localstack-secrets -n localstack --from-literal=auth-token='YOUR-TOKEN'
+```
+
+### 📊 Prometheus Permission Denied
+In the event of a "Permission Denied" error in Prometheus (Monitoring stack), follow these steps to clean up the environment:
+
+```bash
+kubectl delete application monitoring -n argocd
 kubectl delete jobs,pods,deployments,statefulsets --all -n monitoring
-📂 Repository StructureDirectoryContents.github/DevSecOps Pipelines & Port Automationsapps/baseHardened Nginx manifests (HPA, RBAC, NetPol)bootstrap/ArgoCD Root-App (Platform Entry Point)infrastructure/ArgoCD Apps: Cilium, monitoring, LocalStack, databases, etc.terraform/IaC modules for Cloud & LocalStack provisioning🤝 ContributingContributions, ideas, and bug fixes are highly welcome! If you want to help improve this platform, please feel free to open an Issue or submit a Pull Request on GitHub.🔮 Future Improvements⚙️ LocalStack Automation: Manage LocalStack resources directly through Backstage and Terraform.🤖 MLOps/AIOps: Introduce specialized stacks tailored for MLOps/AIOps workflows.📦 Cluster Bootstrapping: Add native support for K3S or Minikube to optimize local resource consumption.
+```
+
+---
+
+## 📂 Repository Structure
+
+| Directory | Contents |
+| :--- | :--- |
+| `.github/` | DevSecOps Pipelines & Port Automations |
+| `apps/base` | Hardened Nginx manifests (HPA, RBAC, NetPol) |
+| `bootstrap/` | ArgoCD Root-App (Platform Entry Point) |
+| `infrastructure/` | ArgoCD Apps: Cilium, monitoring, LocalStack, databases, etc. |
+| `terraform/` | IaC modules for Cloud & LocalStack provisioning |
+
+---
+
+## 🤝 Contributing
+Contributions, ideas, and bug fixes are highly welcome! If you want to help improve this platform, please feel free to open an Issue or submit a Pull Request on GitHub.
+
+---
+
+## 🔮 Future Improvements
+
+* **⚙️ LocalStack Automation:** Manage LocalStack resources directly through Backstage and Terraform.
+* **🤖 MLOps/AIOps:** Introduce specialized stacks tailored for MLOps/AIOps workflows.
+* **📦 Cluster Bootstrapping:** Add native support for K3S or Minikube to optimize local resource consumption.
