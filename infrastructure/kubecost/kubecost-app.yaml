@@ -13,23 +13,23 @@ spec:
       values: |
         kubecostProductConfigs:
           clusterName: my-lab-cluster
-          # Εδώ ορίζουμε το URL του δικού σου Prometheus Service
-          # Μορφή: http://<service-name>.<namespace>.svc:9090
+          # Εδώ σιγουρεύουμε ότι κοιτάει τον Prometheus στο namespace monitoring
           prometheusExternalUrl: http://monitoring-kube-prometheus-prometheus.monitoring.svc:9090
+          prometheusMgmtApiEndpoint: http://monitoring-kube-prometheus-prometheus.monitoring.svc:9090
           
+        # ΑΠΕΝΕΡΓΟΠΟΙΗΣΗ ΟΛΩΝ ΤΩΝ ΕΞΤΡΑ
         prometheus:
-          enabled: false # Κλείνουμε τον εσωτερικό Prometheus
+          enabled: false
+          fqdn: http://monitoring-kube-prometheus-prometheus.monitoring.svc:9090
         
-        # Απενεργοποιούμε και τα υπόλοιπα components που δεν χρειάζονται
-        # αφού έχουμε το δικό μας stack
-        networkCosts:
-          enabled: true
-          
+        grafana:
+          enabled: false  # Μην φτιάχνεις δεύτερο Grafana
+        
+        # Ενεργοποίηση του ServiceMonitor για να το βλέπει ο Operator σου
         serviceMonitor:
           enabled: true
-          # Βάζουμε το label που συνήθως ψάχνει ο Prometheus Operator
           additionalLabels:
-            release: monitoring
+            release: monitoring # Αυτό πρέπει να ταιριάζει με το όνομα του monitoring app σου
   destination:
     server: https://kubernetes.default.svc
     namespace: kubecost
@@ -37,5 +37,3 @@ spec:
     automated:
       prune: true
       selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
