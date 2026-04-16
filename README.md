@@ -1,6 +1,7 @@
 # 🚀 Platform Engineer: The Cloud-Native Blueprint
+![Status: Work in Progress](https://img.shields.io/badge/Status-Active%20Development-blue?style=for-the-badge&logo=github)
 
-This repository is a professional **Internal Developer Platform (IDP)** demonstration. It showcases a production-ready environment secured with fine-grained RBAC, automated scaling, eBPF-powered network isolation, and a robust DevSecOps pipeline.
+This repository is a professional **Internal Developer Platform (IDP)** demonstration. While continuously expanding, it currently showcases a production-ready environment secured with fine-grained RBAC, automated scaling, eBPF-powered network isolation, and a robust DevSecOps pipeline.
 
 ---
 
