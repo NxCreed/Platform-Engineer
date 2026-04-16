@@ -135,8 +135,18 @@ Contributions, ideas, and bug fixes are highly welcome! If you want to help impr
 
 ## 🔮 Future Improvements
 
-* **⚙️ LocalStack Automation:** Manage LocalStack resources directly through Backstage and Terraform.
-* **🤖 MLOps/AIOps:** Introduce specialized stacks tailored for MLOps/AIOps workflows.
-* **📦 Cluster Bootstrapping:** Add native support for K3S or Minikube to optimize local resource consumption.
-* **🔀 Migration to Kubernetes Gateway API:** Transition the current traditional Ingress rules to the modern Gateway API. 
-  * *Why?* The Gateway API provides a more expressive, extensible, and role-oriented model for traffic routing. Unlike traditional Ingress, it natively supports advanced routing capabilities (e.g., HTTP header matching, weighted traffic splitting, and protocols like TCP/UDP/gRPC) without relying on complex, vendor-specific annotations.
+* **⚙️ LocalStack Automation:** Manage LocalStack resources directly through Backstage and Terraform for a more seamless developer experience.
+* **🤖 MLOps/AIOps:** Introduce specialized stacks tailored for MLOps/AIOps workflows, including JupyterHub and Kubeflow components.
+* **📦 Cluster Bootstrapping:** Add native support for K3S or Minikube to optimize local resource consumption for developers with limited hardware.
+* **🔀 Migration to Kubernetes Gateway API:** Transition from traditional Ingress to the modern Gateway API.
+    * *Why?* It offers a more expressive and role-oriented API for traffic routing, supporting advanced features like header matching and weighted splitting without vendor-specific annotations.
+* **🔐 Secret Management Integration:** Implement **External Secrets Operator (ESO)** or **SOPS**.
+    * *Why?* To bridge the gap between external secret managers (like AWS Secrets Manager or Vault) and Kubernetes, ensuring secrets are handled securely within GitOps workflows without manual `kubectl` steps.
+* **🚀 Progressive Delivery:** Integrate **Argo Rollouts**.
+    * *Why?* To enable Canary and Blue-Green deployment strategies. This allows for automated health-based rollbacks, significantly reducing the risk of deploying broken versions.
+* **🛡️ Policy-as-Code:** Adopt **Kyverno** or **OPA Gatekeeper**.
+    * *Why?* To automatically enforce security best practices (e.g., no root containers) and compliance rules across the cluster, preventing "configuration drift" from security standards.
+* **🔭 Full-Stack Observability:** Complement Prometheus with **Loki** (logs) and **Tempo** (tracing).
+    * *Why?* To provide a "three-pillar" observability view. Correlating metrics, logs, and traces in a single Grafana dashboard dramatically reduces Mean Time To Recovery (MTTR) during incidents.
+* **💾 Disaster Recovery:** Setup **Velero** for automated backups.
+    * *Why?* To ensure business continuity by regularly backing up cluster metadata and Persistent Volumes (PVs) to S3-compatible storage, allowing for quick recovery in case of cluster failure.
