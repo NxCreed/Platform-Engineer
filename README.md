@@ -138,3 +138,5 @@ Contributions, ideas, and bug fixes are highly welcome! If you want to help impr
 * **⚙️ LocalStack Automation:** Manage LocalStack resources directly through Backstage and Terraform.
 * **🤖 MLOps/AIOps:** Introduce specialized stacks tailored for MLOps/AIOps workflows.
 * **📦 Cluster Bootstrapping:** Add native support for K3S or Minikube to optimize local resource consumption.
+* **🔀 Migration to Kubernetes Gateway API:** Transition the current traditional Ingress rules to the modern Gateway API. 
+  * *Why?* The Gateway API provides a more expressive, extensible, and role-oriented model for traffic routing. Unlike traditional Ingress, it natively supports advanced routing capabilities (e.g., HTTP header matching, weighted traffic splitting, and protocols like TCP/UDP/gRPC) without relying on complex, vendor-specific annotations.
