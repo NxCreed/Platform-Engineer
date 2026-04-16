@@ -34,7 +34,7 @@ jobs:
           framework: kubernetes
           output_format: sarif
           output_file_path: checkov.sarif
-          soft_fail: true # Bypass: Καταγράφει αλλά δεν "κόβει" το build
+          soft_fail: true
 
       # 3. Trivy Config Scan (Misconfigurations)
       - name: Trivy Config Scan
