@@ -50,6 +50,12 @@ spec:
         # Ενεργοποίηση του Web UI (προαιρετικό)
         ui:
           enabled: true
+        sidecarContainers:
+          - name: velero-ui
+            image: vmware-tanzu/velero-dashboard:v0.1.0
+            ports:
+              - containerPort: 8080
+                name: ui
   
   destination:
     server: https://kubernetes.default.svc
