@@ -11,9 +11,6 @@ spec:
     targetRevision: 6.0.0
     helm:
       values: |
-        upgradeCRDs: false
-        cleanUpCRDs: false
-        
         configuration:
           backupStorageLocation:
             - name: default
@@ -23,18 +20,20 @@ spec:
                 region: us-east-1
                 s3ForcePathStyle: true
                 s3Url: http://localstack-aws.localstack.svc.cluster.local:4566
-          volumeSnapshotLocation:
-            - name: default
-              provider: aws
-              config:
-                region: us-east-1
-        
-        initContainers:
-          - name: velero-plugin-for-aws
-            image: velero/velero-plugin-for-aws:v1.9.0
-            volumeMounts:
-              - mountPath: /target
-                name: plugins
+
+        # ΑΥΤΟ ΕΙΝΑΙ ΤΟ ΚΛΕΙΔΙ: Χειροκίνητο UI sidecar
+        sidecarContainers:
+          - name: velero-ui
+            image: vmware-tanzu/velero-dashboard:v0.1.0
+            ports:
+              - containerPort: 8080
+
+        # Ανοίγουμε την πόρτα 8080 στο βασικό service "velero"
+        service:
+          additionalPorts:
+            - name: ui-port
+              port: 8080
+              targetPort: 8080
 
         credentials:
           secretContents:
@@ -42,21 +41,10 @@ spec:
               [default]
               aws_access_key_id = test
               aws_secret_access_key = test
-
-        # ΕΝΕΡΓΟΠΟΙΗΣΗ ΤΟΥ WEB UI ΣΤΗΝ ΠΟΡΤΑ 8888
-        ui:
-          enabled: true
-          service:
-            type: ClusterIP
-            port: 8888
-  
   destination:
     server: https://kubernetes.default.svc
     namespace: velero
-  
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
