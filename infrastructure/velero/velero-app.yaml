@@ -36,26 +36,19 @@ spec:
               - mountPath: /target
                 name: plugins
 
-        # 1. ΠΡΟΣΘΗΚΗ ΤΟΥ UI SIDECAR
-        sidecarContainers:
-          - name: velero-ui
-            image: vmware-tanzu/velero-dashboard:v0.1.0
-            ports:
-              - containerPort: 8080
-
-        # 2. ΔΗΛΩΣΗ ΤΗΣ ΠΟΡΤΑΣ ΣΤΟ SERVICE (Λύνει το error σου)
-        service:
-          additionalPorts:
-            - name: ui
-              port: 8080
-              targetPort: 8080
-
         credentials:
           secretContents:
             cloud: |
               [default]
               aws_access_key_id = test
               aws_secret_access_key = test
+
+        # ΕΝΕΡΓΟΠΟΙΗΣΗ ΤΟΥ WEB UI ΣΤΗΝ ΠΟΡΤΑ 8888
+        ui:
+          enabled: true
+          service:
+            type: ClusterIP
+            port: 8888
   
   destination:
     server: https://kubernetes.default.svc

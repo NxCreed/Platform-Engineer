@@ -15,6 +15,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: velero
+            name: velero-ui
             port:
-              number: 8080
+              number: 8888
