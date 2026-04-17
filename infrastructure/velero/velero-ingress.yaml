@@ -13,9 +13,9 @@ spec:
     http:
       paths:
       - path: /
-        pathType: ImplementationSpecific # Άλλαξέ το από Prefix σε ImplementationSpecific
+        pathType: Prefix
         backend:
           service:
-            name: velero-ui
+            name: velero
             port:
-              number: 80
+              number: 8080
