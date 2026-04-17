@@ -12,7 +12,7 @@ spec:
     helm:
       values: |
         configuration:
-          # ΠΡΟΣΟΧΗ: Έγινε λίστα (προστέθηκε το - )
+          # Χρήση λίστας (array) για αποφυγή του "coalesce.go" error
           backupStorageLocation:
             - name: default
               provider: aws
@@ -22,7 +22,6 @@ spec:
                 s3ForcePathStyle: true
                 s3Url: http://localstack-aws.localstack.svc.local:4566
           
-          # ΠΡΟΣΟΧΗ: Έγινε λίστα (προστέθηκε το - )
           volumeSnapshotLocation:
             - name: default
               provider: aws
@@ -31,7 +30,7 @@ spec:
         
         initContainers:
           - name: velero-plugin-for-aws
-            image: bitnami/kubectl:latest
+            image: velero/velero-plugin-for-aws:v1.9.0
             volumeMounts:
               - mountPath: /plugins
                 name: plugins
@@ -43,6 +42,7 @@ spec:
               aws_access_key_id = test
               aws_secret_access_key = test
 
+        # Ενεργοποίηση του Web UI
         ui:
           enabled: true
   destination:
