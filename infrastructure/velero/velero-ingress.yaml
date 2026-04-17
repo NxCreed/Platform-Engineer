@@ -17,4 +17,4 @@ spec:
           service:
             name: velero
             port:
-              number: 8080 # Στοχεύουμε πλέον την 8080 του UI
+              number: 8080

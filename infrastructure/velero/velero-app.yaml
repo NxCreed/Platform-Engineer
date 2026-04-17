@@ -36,14 +36,14 @@ spec:
               - mountPath: /target
                 name: plugins
 
-        # ΠΡΟΣΘΗΚΗ ΤΟΥ UI ΩΣ SIDECAR
+        # 1. ΠΡΟΣΘΗΚΗ ΤΟΥ UI SIDECAR
         sidecarContainers:
           - name: velero-ui
             image: vmware-tanzu/velero-dashboard:v0.1.0
             ports:
               - containerPort: 8080
-        
-        # ΑΝΟΙΓΜΑ ΤΗΣ ΠΟΡΤΑΣ 8080 ΣΤΟ SERVICE
+
+        # 2. ΔΗΛΩΣΗ ΤΗΣ ΠΟΡΤΑΣ ΣΤΟ SERVICE (Λύνει το error σου)
         service:
           additionalPorts:
             - name: ui
