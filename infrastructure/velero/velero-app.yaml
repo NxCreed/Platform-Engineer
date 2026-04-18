@@ -36,27 +36,26 @@ spec:
               - mountPath: /target
                 name: plugins
 
-        # ΔΙΟΡΘΩΜΕΝΟ SIDE CAR ΜΕ ΣΩΣΤΟ IMAGE
+        # ΠΡΟΣΟΧΗ: Η στοίχιση πρέπει να είναι ίδια με το initContainers
         sidecarContainers:
           - name: velero-ui
             image: ghcr.io/otwld/velero-ui:latest
             ports:
               - containerPort: 8080
-              
+            env:
+              - name: VELERO_SERVER_ADDRESS
+                value: "localhost:9087"
+
         credentials:
           secretContents:
             cloud: |
               [default]
               aws_access_key_id = test
               aws_secret_access_key = test
-  
   destination:
     server: https://kubernetes.default.svc
     namespace: velero
-  
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
-    syncOptions:
-      - CreateNamespace=true

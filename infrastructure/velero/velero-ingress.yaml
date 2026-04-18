@@ -3,6 +3,8 @@ kind: Ingress
 metadata:
   name: velero-ui-ingress
   namespace: velero
+  annotations:
+    kubernetes.io/ingress.class: nginx
 spec:
   ingressClassName: nginx
   rules:
@@ -13,6 +15,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: velero-ui # <--- ΑΛΛΑΓΗ ΕΔΩ
+            name: velero-ui-service # Πρέπει να ταυτίζεται με το όνομα στο Service
             port:
               number: 8080
