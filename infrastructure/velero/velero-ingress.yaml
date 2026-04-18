@@ -13,6 +13,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: velero
+            name: velero-ui # <--- ΑΛΛΑΓΗ ΕΔΩ
             port:
               number: 8080

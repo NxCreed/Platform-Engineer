@@ -39,7 +39,7 @@ spec:
         # ΔΙΟΡΘΩΜΕΝΟ SIDE CAR ΜΕ ΣΩΣΤΟ IMAGE
         sidecarContainers:
           - name: velero-ui
-            image: vmware-tanzu/velero-dashboard:v0.1.0
+            image: ghcr.io/otwld/velero-ui:latest
             ports:
               - containerPort: 8080
 
