@@ -19,9 +19,20 @@ spec:
             enabled: false
           tls:
             enabled: false
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+            requests:
+              cpu: 50m
+              memory: 64Mi
 
         prometheus:
           prometheusSpec:
+            serviceMonitorSelectorNilUsesHelmValues: false
+            serviceMonitorSelector: {}
+            podMonitorSelectorNilUsesHelmValues: false
+            podMonitorSelector: {}
             retention: 1h
             resources:
               limits:
@@ -39,20 +50,20 @@ spec:
             requests:
               cpu: 100m
               memory: 256Mi
-          # Πηγές δεδομένων
+          
+          # --- ΠΡΟΣΘΗΚΗ: Δηλώνουμε ρητά και τα 2 Data Sources ---
           additionalDataSources:
             - name: Prometheus
               type: prometheus
-              url: http://prometheus-operated.monitoring.svc:9090
+              url: http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
               access: proxy
               isDefault: true
-              jsonData:
-                timeInterval: "5s"
             - name: Loki
               type: loki
-              url: http://loki-stack.monitoring.svc:3100
+              url: http://loki-stack.monitoring.svc.cluster.local:3100
               access: proxy
               isDefault: false
+          # ------------------------------------------------------
 
         kubeControllerManager:
           enabled: false
@@ -62,6 +73,13 @@ spec:
           enabled: false
         kubeProxy:
           enabled: false
+
+        nodeExporter:
+          resources:
+            limits:
+              memory: 50Mi
+            requests:
+              memory: 20Mi
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
@@ -69,9 +87,8 @@ spec:
     automated:
       prune: true
       selfHeal: true
-    # ---- Η ΛΥΣΗ ΕΙΝΑΙ ΕΔΩ ----
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
       - Replace=true
-    # --------------------------
+      - SkipDryRunOnMissingResource=true
