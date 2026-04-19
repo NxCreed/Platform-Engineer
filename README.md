@@ -49,9 +49,19 @@ This repository is an ongoing project aimed at building a professional **Interna
 * **Hubble UI:** Deep network flow observability accessible at `hubble.local`.
 * **Network Policies:** Explicit Egress rules (Nginx → Redis) and Ingress rules (Monitoring → Nginx).
 
-## 📊 Monitoring & Metrics (Prometheus & Grafana)
+## 📊 Monitoring, Metrics & Logging (The Observability Stack)
 * **Kube-Prometheus-Stack:** Lightweight setup with 1h retention and disabled webhooks for local development performance.
+* **Grafana:** Centralized dashboards for metrics and logs.
+* **Loki:** Log aggregation system, providing full-stack visibility alongside Prometheus metrics.
 * **Autoscaling:** **HPA** manages Nginx replicas (2 to 10) based on a 70% CPU utilization threshold.
+
+## 💾 Disaster Recovery & Backup (Velero)
+* **Velero:** Automated backup and restore solution for Kubernetes cluster resources and persistent volumes.
+* **Scheduled Backups:** Configured to ensure data resilience for PostgreSQL and Redis workloads.
+
+## 💸 FinOps & Cost Optimization (Kubecost)
+* **Kubecost:** Real-time cost visibility and insights for Kubernetes resources.
+* **Resource Efficiency:** Helps identify over-provisioned workloads and optimize the platform's spend.
 
 ## 🗄️ Storage & Databases (Redis & PostgreSQL)
 * **PostgreSQL:** Deployed via Helm-based Application with 8Gi persistent storage.
@@ -143,6 +153,3 @@ Contributions, ideas, and bug fixes are highly welcome! If you want to help impr
 * **🔀 Migration to Kubernetes Gateway API:** Transition from traditional Ingress to the modern Gateway API.
 * **🔐 Secret Management Integration:** Implement **HashiCorp Vault** integration via **External Secrets Operator (ESO)**.
 * **🚀 Progressive Delivery:** Integrate **Argo Rollouts** for Canary and Blue-Green deployments.
-* **🔭 Full-Stack Observability:** Complement Prometheus with **Loki** (logs).
-* **💾 Disaster Recovery:** Setup **Velero** for automated backups.
-* **💸 FinOps & Cost Monitoring:** Integrate **Kubecost** to track and optimize Kubernetes resource spending.
