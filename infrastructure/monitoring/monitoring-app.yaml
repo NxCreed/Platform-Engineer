@@ -53,6 +53,13 @@ spec:
             requests:
               cpu: 100m
               memory: 256Mi
+              
+         additionalDataSources:
+            - name: Loki
+              type: loku
+              url: http://loki-stack.monitoring.svc.cluster.local:3100
+              access: proxy
+              isDefault: false
 
         # Απενεργοποίηση metrics που δεν χρειαζόμαστε στο lab
         kubeControllerManager:
