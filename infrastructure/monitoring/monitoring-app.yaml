@@ -39,13 +39,15 @@ spec:
             requests:
               cpu: 100m
               memory: 256Mi
-          # Εδώ ορίζουμε ρητά και τις δύο πηγές
+          # Ρύθμιση Provisioning για να τα βλέπει όλα
           additionalDataSources:
             - name: Prometheus
               type: prometheus
-              url: http://monitoring-kube-prometheus-prometheus.monitoring.svc:9090
+              url: http://prometheus-operated.monitoring.svc:9090
               access: proxy
               isDefault: true
+              jsonData:
+                timeInterval: "5s"
             - name: Loki
               type: loki
               url: http://loki-stack.monitoring.svc:3100
@@ -67,5 +69,3 @@ spec:
     automated:
       prune: true
       selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
