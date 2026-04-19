@@ -41,7 +41,7 @@ spec:
             registry: docker.io
             repository: bitnami/postgresql
             # Διόρθωση για το ImagePullBackOff - χρησιμοποιούμε tag που υπάρχει σίγουρα
-            tag: lastest
+            tag: latest
           auth:
             postgresqlPassword: "backstage-password"
           primary:
