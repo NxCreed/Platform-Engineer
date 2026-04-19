@@ -16,14 +16,10 @@ spec:
           tag: latest
           pullPolicy: Always
         
-        # Ενεργοποίηση μόνιμης αποθήκευσης (Persistence)
         persistence:
           enabled: true
           size: 5Gi
-          # Αν το cluster σου έχει συγκεκριμένο storage class (π.χ. στο k3d είναι το "local-path")
-          # storageClass: "local-path"
 
-        # Διόρθωση για το kubectl image pull error
         kubectl:
           image:
             repository: docker.io/bitnami/kubectl
@@ -46,6 +42,12 @@ spec:
           - name: DOCKER_HOST
             value: unix:///var/run/docker.sock
         
+        # Αυτό βοηθάει αν το liveness probe αποτυγχάνει λόγω καθυστέρησης
+        livenessProbe:
+          initialDelaySeconds: 60
+        readinessProbe:
+          initialDelaySeconds: 60
+
         mountDind:
           enabled: false
         
@@ -56,14 +58,6 @@ spec:
         volumeMounts:
           - name: docker-sock
             mountPath: /var/run/docker.sock
-
-        resources:
-          requests:
-            cpu: "200m"
-            memory: "1Gi"
-          limits:
-            cpu: "1000m"
-            memory: "2Gi"
   destination:
     server: https://kubernetes.default.svc
     namespace: localstack
@@ -71,5 +65,3 @@ spec:
     automated:
       prune: true
       selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
