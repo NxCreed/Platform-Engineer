@@ -1,0 +1,50 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: backstage
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: backstage
+    repoURL: https://backstage.github.io/charts
+    targetRevision: 0.3.15
+    helm:
+      values: |
+        backstage:
+          appConfig:
+            app:
+              baseUrl: http://backstage.local
+            backend:
+              baseUrl: http://backstage.local
+              database:
+                client: pg
+            integrations:
+              github:
+                - host: github.com
+                  token: ${GITHUB_TOKEN}
+          
+          extraEnvVars:
+            - name: GITHUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: github-secrets
+                  key: token
+
+        # Ενεργοποίηση της εσωτερικής PostgreSQL
+        postgresql:
+          enabled: true
+          auth:
+            postgresqlPassword: "change-me-securely" # Ή χρησιμοποίησε secret
+          primary:
+            persistence:
+              enabled: true
+              size: 2Gi
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: backstage
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    createNamespace: true
