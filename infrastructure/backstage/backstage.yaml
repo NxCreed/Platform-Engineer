@@ -42,6 +42,7 @@ spec:
             registry: docker.io
             repository: bitnami/postgresql
             tag: latest
+            pullPolicy: Always
           auth:
             postgresqlPassword: "backstage-password"
           primary:
