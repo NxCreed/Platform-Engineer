@@ -10,6 +10,7 @@ spec:
     repoURL: https://backstage.github.io/charts
     targetRevision: 1.0.0
     helm:
+      skipSchemaValidation: true
       values: |
         backstage:
           appConfig:
