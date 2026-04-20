@@ -16,7 +16,7 @@ spec:
           image:
             registry: docker.io
             repository: nxcreed/my-backstage # Το δικό σου σωστό image
-            tag: v1 # Το σωστό tag
+            tag: latest
           appConfig:
             app:
               baseUrl: http://backstage.local
