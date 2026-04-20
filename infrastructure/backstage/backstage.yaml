@@ -55,12 +55,11 @@ spec:
             repository: bitnami/postgresql
             tag: "latest" # Ή όποιο tag βρήκες νωρίτερα
           auth:
-            # Το chart της Bitnami θα διαβάσει τον κωδικό απευθείας από το Secret!
-            existingSecret: "postgres-secrets"
-          primary:
-            persistence:
-              enabled: true
-              size: 2Gi
+            existingSecret: "backstage-db-auth"
+            # ΑΥΤΟ ΕΙΝΑΙ ΤΟ ΚΛΕΙΔΙ: Λέμε στο Helm ποιο entry να κοιτάξει
+            secretKeys: 
+              userPasswordKey: "password"
+              adminPasswordKey: "password"
   destination:
     server: https://kubernetes.default.svc
     namespace: backstage
