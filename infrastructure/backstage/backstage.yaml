@@ -19,6 +19,7 @@ spec:
             tag: v4
           appConfig:
             app:
+              title: "Internal Developer Portal"
               baseUrl: http://backstage.local
             backend:
               baseUrl: http://backstage.local
