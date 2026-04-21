@@ -16,33 +16,26 @@ spec:
           image:
             registry: docker.io
             repository: nxcreed/my-backstage
-            tag: v13
+            tag: v14
           
-          # Αυτό περιμένει τη βάση πριν ξεκινήσει (για να μην κρασάρει το pod)
           extraInitContainers:
             - name: wait-for-postgres
               image: busybox:latest
-              command:
-                - sh
-                - -c
-                - |
-                  until nc -zv backstage-postgresql 5432; do
-                    echo "Waiting for PostgreSQL..."
-                    sleep 2
-                  done
+              command: [ "sh", "-c", "until nc -zv backstage-postgresql 5432; do echo waiting for db; sleep 2; done;" ]
 
           appConfig:
             app:
-              title: "Internal Developer Portal"
               baseUrl: http://backstage.local
             
             backend:
               baseUrl: http://backstage.local
               cors:
-                origin: http://backstage.local
+                # ΔΕΧΟΜΑΣΤΕ ΚΑΙ ΤΑ ΔΥΟ ΓΙΑ ΝΑ ΜΗΝ ΣΚΑΕΙ Ο BROWSER
+                origin: [ "http://backstage.local", "https://backstage.local" ]
                 methods: [GET, POST, PUT, DELETE, OPTIONS]
+                # ΟΛΑ ΤΑ HEADERS ΠΟΥ ΖΗΤΗΣΑΝ ΤΑ LOGS ΣΟΥ
                 allowedHeaders: [Content-Type, Authorization, Cookie, X-Authorization, X-Requested-With]
-                credentials: true # <--- ΚΡΙΣΙΜΟ ΓΙΑ ΤΗΝ ΑΣΠΡΗ ΟΘΟΝΗ
+                credentials: true
               
               database:
                 client: pg
