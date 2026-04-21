@@ -47,7 +47,6 @@ spec:
             signInPage: guest 
 
           extraEnvVars:
-            # Τραβάμε τα κρυφά values από το Secret που φτιάξαμε στο Kubernetes
             - name: BACKEND_SECRET
               valueFrom:
                 secretKeyRef:
