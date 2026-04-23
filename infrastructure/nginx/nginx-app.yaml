@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/chrisignat/Platform-Engineer.git  # <-- Βάλε το repo σου!
+    repoURL: https://github.com/chrisignat/Platform-Engineer.git 
     targetRevision: main
     path: apps/base # Επειδή τα nginx.yaml / kustomization.yaml είναι στον κεντρικό φάκελο
   destination:

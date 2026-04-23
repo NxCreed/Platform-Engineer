@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: simple-deploy-
+  namespace: argo
+spec:
+  arguments:
+    parameters:
+    - name: app-name
+      value: "my-new-nginx" # Ο developer μπορεί να το αλλάξει από το UI
+  
+  entrypoint: deploy-step
+  
+  templates:
+  - name: deploy-step
+    resource:
+      action: create
+      manifest: |
+        # Αυτό είναι το nginx-app.yaml που μου έστειλες, αλλά με δυναμικό όνομα
+        apiVersion: argoproj.io/v1alpha1
+        kind: Application
+        metadata:
+          name: {{workflow.parameters.app-name}}
+          namespace: argocd
+        spec:
+          project: default
+          source:
+            repoURL: https://github.com/chrisignat/Platform-Engineer.git 
+            targetRevision: main
+            path: apps/base
+          destination:
+            server: https://kubernetes.default.svc
+            namespace: default # Εδώ θα μπει το nginx
+          syncPolicy:
+            automated:
+              prune: true
+              selfHeal: true
