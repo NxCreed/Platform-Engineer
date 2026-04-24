@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: loki-stack
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://grafana.github.io/helm-charts
+    chart: loki-stack
+    targetRevision: 2.10.2
+    helm:
+      values: |
+        loki:
+          enabled: true
+        promtail:
+          enabled: true  # <--- ΑΥΤΟ ΘΑ ΜΑΖΕΥΕΙ ΤΑ LOGS
+          config:
+            clients:
+              - url: http://localhost:3100/loki/api/v1/push
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring # Στο ίδιο namespace με το Grafana
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
