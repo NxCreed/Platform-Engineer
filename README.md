@@ -7,7 +7,7 @@ This repository is an ongoing project aimed at building a professional **Interna
 ---
 
 ## 📖 Table of Contents
-1. [📦 Internal Developer Platform (Backstage & Port)](#-internal-developer-platform-backstage--port)
+1. [📦 Internal Developer Platform (Argo Workflows)](#-internal-developer-platform-argo-workflows)
 2. [🔄 GitOps & Continuous Delivery (ArgoCD)](#-gitops--continuous-delivery-argocd)
 3. [🛡️ DevSecOps & Security (CI/CD)](#-devsecops--security-cicd)
 4. [🏗️ Infrastructure as Code (Terraform & LocalStack)](#-infrastructure-as-code-terraform--localstack)
@@ -24,10 +24,10 @@ This repository is an ongoing project aimed at building a professional **Interna
 
 ---
 
-## 📦 Internal Developer Platform (Backstage & Port)
-* **Backstage.io:** Centralized portal for infrastructure and service management.
-* **Port Integration:** Advanced software catalog and scorecard system.
-* **Self-Service Actions:** Features a `Fix Port Scorecard` workflow, allowing developers to automate documentation updates directly from the Port UI.
+## 📦 Internal Developer Platform (Argo Workflows & Port)
+* **Argo Workflows:** The central orchestration engine for managing service and infrastructure lifecycles through Kubernetes-native workflows.
+* **Port Integration:** Advanced software catalog and scorecard system where Argo Workflows act as the execution layer to populate and update Port entities.
+* **Self-Service Actions:** Features a `Fix Port Scorecard` workflow template. This allows developers to trigger automated documentation updates and compliance fixes directly from the Port UI, executed as scalable Argo jobs.
 
 ## 🔄 GitOps & Continuous Delivery (ArgoCD)
 * **App-of-Apps Pattern:** A **Root-App** (found in `/bootstrap`) recursively manages all platform components within the `/infrastructure` directory.
@@ -147,7 +147,6 @@ Contributions, ideas, and bug fixes are highly welcome! If you want to help impr
 
 ## 🔮 Future Improvements
 
-* **⚙️ LocalStack Automation:** Manage LocalStack resources directly through Backstage and Terraform.
 * **🤖 MLOps/AIOps:** Introduce specialized stacks tailored for MLOps/AIOps workflows.
 * **📦 Cluster Bootstrapping:** Add native support for K3S or Minikube to optimize local resource consumption.
 * **🔀 Migration to Kubernetes Gateway API:** Transition from traditional Ingress to the modern Gateway API.
