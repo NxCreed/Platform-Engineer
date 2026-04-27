@@ -67,8 +67,9 @@ This repository is an ongoing project aimed at building a professional **Interna
 * **PostgreSQL:** Deployed via Helm-based Application with 8Gi persistent storage.
 * **Redis:** High-availability setup with 3 replicas and persistent storage via PVCs.
 
-## 🔑 Secrets Management (Sealed Secrets)
-* **Sealed Secrets:** Integrated into the GitOps flow to allow secure storage of encrypted credentials directly in the repository.
+## 🔑 Secrets Management (Vault & ESO)
+* **HashiCorp Vault:** Centralized secure storage and management of sensitive data (Single Source of Truth).
+* **External Secrets Operator (ESO):** Automatically syncs secrets from Vault to Kubernetes, keeping the GitOps workflow secure and credential-free.
 
 ## 🚀 Apps & Base Implementation
 * **Hardened Nginx:** Uses `nginx-unprivileged` images and restricted security contexts (`runAsNonRoot: true`).
