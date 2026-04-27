@@ -13,7 +13,7 @@ spec:
       values: |
         server:
           dev:
-            enabled: false # Θέτουμε false για να έχουμε persistence
+            enabled: false
           standalone:
             enabled: true
           ui:

@@ -13,7 +13,6 @@ spec:
       values: |
         kubecostProductConfigs:
           clusterName: my-lab-cluster
-          # Σύνδεση με τον Prometheus στο monitoring namespace
           prometheusExternalUrl: http://monitoring-kube-prometheus-prometheus.monitoring.svc:9090
           prometheusMgmtApiEndpoint: http://monitoring-kube-prometheus-prometheus.monitoring.svc:9090
           

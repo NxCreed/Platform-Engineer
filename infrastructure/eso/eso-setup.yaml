@@ -1,0 +1,47 @@
+# 1. Πες στον ESO πού είναι το Vault
+apiVersion: external-secrets.io/v1beta1
+kind: ClusterSecretStore
+metadata:
+  name: vault-backend
+spec:
+  provider:
+    vault:
+      server: "http://vault.vault.svc.cluster.local:8200"
+      path: "secret"
+      version: "v2"
+      auth:
+        kubernetes:
+          mountPath: "kubernetes"
+          role: "velero-role" # Αυτό που έφτιαξες στο Βήμα 1
+          serviceAccountRef:
+            name: "external-secrets"
+            namespace: "external-secrets"
+---
+# 2. Ζήτα από τον ESO να φτιάξει το secret για το Velero
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: velero-repo-credentials
+  namespace: velero
+spec:
+  refreshInterval: "1h"
+  secretStoreRef:
+    name: vault-backend
+    kind: ClusterSecretStore
+  target:
+    name: velero-repo-credentials # Τέτοιο όνομα περιμένει το Velero
+  data:
+  - secretKey: access_key
+    remoteRef:
+      key: velero # Το όνομα που έδωσες στο Vault
+      property: access_key
+  - secretKey: secret_key
+    remoteRef:
+      key: velero
+      property: secret_key
+  template:
+    data:
+      cloud: |
+        [default]
+        aws_access_key_id = {{ .access_key }}
+        aws_secret_access_key = {{ .secret_key }}
