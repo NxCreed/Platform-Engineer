@@ -12,6 +12,7 @@ spec:
       labels:
         app: argo-server
     spec:
+      # ΠΡΟΣΘΕΣΕ ΑΥΤΗ ΤΗ ΓΡΑΜΜΗ:
       serviceAccountName: argo-server
       containers:
       - name: argo-server
@@ -20,6 +21,7 @@ spec:
         - server
         - --auth-mode=server
         - --auth-mode=client
+        # Το secure=true είναι πλέον ενεργό (default) όπως φαίνεται στα logs σου
         ports:
         - containerPort: 2746
           name: https
