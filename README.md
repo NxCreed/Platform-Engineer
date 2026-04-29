@@ -81,10 +81,14 @@ This repository is an ongoing project aimed at building a professional **Interna
 
 ### Local Ingress Map (Add to `/etc/hosts`)
 ```text
-127.0.0.1 argocd.local
-127.0.0.1 grafana.local
-127.0.0.1 hubble.local
 127.0.0.1 localstack.local
+127.0.0.1 grafana.local
+127.0.0.1 argocd.local
+127.0.0.1 hubble.local
+127.0.0.1 kubecost.local
+127.0.0.1 velero.local
+127.0.0.1 workflows.local
+127.0.0.1 vault.local
 ```
 
 ## 🛠️ Troubleshooting
