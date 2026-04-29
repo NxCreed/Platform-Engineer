@@ -63,7 +63,7 @@ This repository is an ongoing project aimed at building a professional **Interna
 * **Kubecost:** Real-time cost visibility and insights for Kubernetes resources.
 * **Resource Efficiency:** Helps identify over-provisioned workloads and optimize the platform's spend.
 
-## 🗄️ Storage & Databases (Redis & PostgreSQL)
+## 🗄️ Storage & Databases (PostgreSQL)
 * **Redis:** High-availability setup with 3 replicas and persistent storage via PVCs.
 
 ## 🔑 Secrets Management (Vault & ESO)
