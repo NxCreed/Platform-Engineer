@@ -64,7 +64,6 @@ This repository is an ongoing project aimed at building a professional **Interna
 * **Resource Efficiency:** Helps identify over-provisioned workloads and optimize the platform's spend.
 
 ## 🗄️ Storage & Databases (Redis & PostgreSQL)
-* **PostgreSQL:** Deployed via Helm-based Application with 8Gi persistent storage.
 * **Redis:** High-availability setup with 3 replicas and persistent storage via PVCs.
 
 ## 🔑 Secrets Management (Vault & ESO)
